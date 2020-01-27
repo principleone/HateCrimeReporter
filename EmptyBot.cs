@@ -46,7 +46,6 @@ namespace HateCrimeReporterCSharp
                 reportingState.CrimeName = text; 
                 await turnContext.SendActivityAsync($"You want to report {text}.", cancellationToken: cancellationToken);
             }
-
             await userState.SaveChangesAsync(turnContext, cancellationToken: cancellationToken);
         }
     }

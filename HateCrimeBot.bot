@@ -1,0 +1,18 @@
+{
+    "name": "HateCrimeBot",
+    "description": "",
+    "services": [
+        {
+            "type": "endpoint",
+            "appId": "",
+            "appPassword": "",
+            "endpoint": "http://localhost:3978/api/messages",
+            "id": "a7aca360-4111-11ea-a67f-09ec83a534bd",
+            "name": "http://localhost:3978/api/messages"
+        }
+    ],
+    "padlock": "",
+    "version": "2.0",
+    "overrides": null,
+    "path": "D:\\Projects\\teach\\HateCrimeReporter-CSharp\\HateCrimeBot.bot"
+}
