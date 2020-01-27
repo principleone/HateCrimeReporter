@@ -11,12 +11,13 @@ using Microsoft.Bot.Schema;
 
 namespace HateCrimeReporterCSharp
 {
-    public class EmptyBot : ActivityHandler
+    public class HateCrimeReportingBot : ActivityHandler
     {
         public const string WhatMessage = "What type of hate crime are you reporting?";
+        public const string Greeting = "Hi! You are talking to the Hate Crime Report Bot. Give me the details of what happened, and I will let the club know so they can take action!";
       private readonly UserState userState;
 
-      public EmptyBot(UserState userState)
+      public HateCrimeReportingBot(UserState userState)
         {
          this.userState = userState;
       }
@@ -28,7 +29,7 @@ namespace HateCrimeReporterCSharp
                 if (member.Id != turnContext.Activity.Recipient.Id)
                 {
                     
-                    await turnContext.SendActivityAsync(MessageFactory.Text($"Hi! You are talking to the Hate Crime Report Bot. Give me the details of what happened, and I will let the club know so they can take action!"), cancellationToken);
+                    await turnContext.SendActivityAsync(MessageFactory.Text(Greeting), cancellationToken);
                     await turnContext.SendActivityAsync(MessageFactory.Text(WhatMessage), cancellationToken: cancellationToken);                    
                 }
             }
@@ -40,7 +41,12 @@ namespace HateCrimeReporterCSharp
             var reportingUserStateAccessor = this.userState.CreateProperty<ReportingStateProperties>("reportState");
             var reportingState = await reportingUserStateAccessor.GetAsync(turnContext, () => new ReportingStateProperties());
 
-            if (string.IsNullOrEmpty(reportingState.CrimeName))
+            if (text.Equals("restart"))
+            {
+                await reportingUserStateAccessor.SetAsync(turnContext, new ReportingStateProperties(), cancellationToken);
+                await turnContext.SendActivityAsync(MessageFactory.Text(Greeting), cancellationToken);
+            }
+            else if (string.IsNullOrEmpty(reportingState.CrimeName))
             {               
                 reportingState.CrimeName = text; 
                 await turnContext.SendActivityAsync($"When did the incident happen? You can give the exact time or the number of minutes into the game if you'd prefer.", cancellationToken: cancellationToken);
@@ -51,7 +57,7 @@ namespace HateCrimeReporterCSharp
             else if (string.IsNullOrEmpty(reportingState.CrimeBehaviour))
             {
                 reportingState.CrimeBehaviour = text;
-                await.turnContext.SendActivityAsync($"Thank you, I have stored all that information. Let’s move onto where this happened.");
+                await turnContext.SendActivityAsync($"Thank you, I have stored all that information. Let’s move onto where this happened.");
             }
 
 
