@@ -42,10 +42,19 @@ namespace HateCrimeReporterCSharp
 
             if (string.IsNullOrEmpty(reportingState.CrimeName))
             {               
-
                 reportingState.CrimeName = text; 
-                await turnContext.SendActivityAsync($"You want to report {text}.", cancellationToken: cancellationToken);
+                await turnContext.SendActivityAsync($"When did the incident happen? You can give the exact time or the number of minutes into the game if you'd prefer.", cancellationToken: cancellationToken);
+            } else if (string.IsNullOrEmpty(reportingState.CrimeTime)){
+                reportingState.CrimeTime = text;
+                await turnContext.SendActivityAsync($"What behaviour did you witness? If you heard exact wording, put it into speech marks");
+            } 
+            else if (string.IsNullOrEmpty(reportingState.CrimeBehaviour))
+            {
+                reportingState.CrimeBehaviour = text;
+                await.turnContext.SendActivityAsync($"Thank you, I have stored all that information. Let’s move onto where this happened.");
             }
+
+
             await userState.SaveChangesAsync(turnContext, cancellationToken: cancellationToken);
         }
     }
