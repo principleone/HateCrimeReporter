@@ -13,15 +13,26 @@ namespace HateCrimeReporterCSharp
 {
     public class EmptyBot : ActivityHandler
     {
+        public const string WhatMessage = "What type of hate crime are you reporting?";
+
         protected override async Task OnMembersAddedAsync(IList<ChannelAccount> membersAdded, ITurnContext<IConversationUpdateActivity> turnContext, CancellationToken cancellationToken)
         {
             foreach (var member in membersAdded)
             {
                 if (member.Id != turnContext.Activity.Recipient.Id)
                 {
-                    await turnContext.SendActivityAsync(MessageFactory.Text($"Hello world!"), cancellationToken);
+                    
+                    await turnContext.SendActivityAsync(MessageFactory.Text($"Hi! You are talking to the Hate Crime Report Bot. Give me the details of what happened, and I will let the club know so they can take action!"), cancellationToken);
+                    await turnContext.SendActivityAsync(MessageFactory.Text(WhatMessage), cancellationToken: cancellationToken);                    
                 }
             }
+        }
+
+        protected override async Task OnMessageActivityAsync(ITurnContext<IMessageActivity> turnContext, CancellationToken cancellationToken)
+        {
+            var text = turnContext.Activity.Text.ToLowerInvariant();
+            await turnContext.SendActivityAsync($"You want to report {text}.", cancellationToken: cancellationToken);
+
         }
     }
 }
