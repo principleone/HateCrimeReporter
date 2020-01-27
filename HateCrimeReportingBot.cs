@@ -20,15 +20,14 @@ namespace HateCrimeReporterCSharp
       public HateCrimeReportingBot(UserState userState)
         {
          this.userState = userState;
-      }
+        }
 
         protected override async Task OnMembersAddedAsync(IList<ChannelAccount> membersAdded, ITurnContext<IConversationUpdateActivity> turnContext, CancellationToken cancellationToken)
         {
             foreach (var member in membersAdded)
             {
                 if (member.Id != turnContext.Activity.Recipient.Id)
-                {
-                    
+                {                    
                     await turnContext.SendActivityAsync(MessageFactory.Text(Greeting), cancellationToken);
                     await turnContext.SendActivityAsync(MessageFactory.Text(WhatMessage), cancellationToken: cancellationToken);                    
                 }
@@ -39,7 +38,7 @@ namespace HateCrimeReporterCSharp
         {
             var text = turnContext.Activity.Text.ToLowerInvariant();
             var reportingUserStateAccessor = this.userState.CreateProperty<ReportingStateProperties>("reportState");
-            var reportingState = await reportingUserStateAccessor.GetAsync(turnContext, () => new ReportingStateProperties());
+            var reportingState = await reportingUserStateAccessor.GetAsync(turnContext, () => new ReportingStateProperties());            
 
             if (text.Equals("restart"))
             {
@@ -58,8 +57,11 @@ namespace HateCrimeReporterCSharp
             {
                 reportingState.CrimeBehaviour = text;
                 await turnContext.SendActivityAsync($"Thank you, I have stored all that information. Let’s move onto where this happened.");
-            }
+                
+                
+                
 
+            }
 
             await userState.SaveChangesAsync(turnContext, cancellationToken: cancellationToken);
         }
