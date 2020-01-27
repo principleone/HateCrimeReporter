@@ -14,6 +14,12 @@ namespace HateCrimeReporterCSharp
     public class EmptyBot : ActivityHandler
     {
         public const string WhatMessage = "What type of hate crime are you reporting?";
+      private readonly UserState userState;
+
+      public EmptyBot(UserState userState)
+        {
+         this.userState = userState;
+      }
 
         protected override async Task OnMembersAddedAsync(IList<ChannelAccount> membersAdded, ITurnContext<IConversationUpdateActivity> turnContext, CancellationToken cancellationToken)
         {
@@ -31,8 +37,17 @@ namespace HateCrimeReporterCSharp
         protected override async Task OnMessageActivityAsync(ITurnContext<IMessageActivity> turnContext, CancellationToken cancellationToken)
         {
             var text = turnContext.Activity.Text.ToLowerInvariant();
-            await turnContext.SendActivityAsync($"You want to report {text}.", cancellationToken: cancellationToken);
+            var reportingUserStateAccessor = this.userState.CreateProperty<ReportingStateProperties>("reportState");
+            var reportingState = await reportingUserStateAccessor.GetAsync(turnContext, () => new ReportingStateProperties());
 
+            if (string.IsNullOrEmpty(reportingState.CrimeName))
+            {               
+
+                reportingState.CrimeName = text; 
+                await turnContext.SendActivityAsync($"You want to report {text}.", cancellationToken: cancellationToken);
+            }
+
+            await userState.SaveChangesAsync(turnContext, cancellationToken: cancellationToken);
         }
     }
 }
